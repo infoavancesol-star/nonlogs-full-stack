@@ -1,0 +1,16 @@
+{
+  "name": "nonlogs-full-stack",
+  "version": "1.0.0",
+  "description": "NonLogs - Crypto Exchange Platform with Python Backend and Frontend",
+  "scripts": {
+    "build": "echo 'Frontend is already static'",
+    "dev": "concurrently \"cd api && python app.py\" \"cd public && python -m http.server 3000\"",
+    "start": "cd api && gunicorn -w 4 -b 0.0.0.0:5000 app:app"
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

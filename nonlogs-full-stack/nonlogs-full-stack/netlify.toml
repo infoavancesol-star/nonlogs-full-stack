@@ -1,0 +1,77 @@
+[build]
+  # Command to build the project (static frontend)
+  command = "echo 'Static site ready'"
+  
+  # Where to find the deploy folder
+  publish = "public"
+  
+  # Where to find functions
+  functions = "netlify/functions"
+  
+  # Python version for functions
+  environment = { PYTHON_VERSION = "3.11" }
+
+# API routes - redirect API calls to serverless functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+# SPA fallback - serve index.html for all non-API routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# API specific headers
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+# Cache headers
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "max-age=31536000"
+    
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "max-age=3600"
+
+# Production context (main branch)
+[context.production]
+  command = "echo 'Building for production'"
+  environment = { 
+    NODE_ENV = "production",
+    FLASK_ENV = "production" 
+  }
+
+# Deploy preview context (pull requests)
+[context.deploy-preview]
+  command = "echo 'Building for preview'"
+  environment = { 
+    NODE_ENV = "development",
+    FLASK_ENV = "development" 
+  }
+
+# Branch deploy context
+[context.branch-deploy]
+  command = "echo 'Building for branch'"
+  environment = { 
+    NODE_ENV = "development",
+    FLASK_ENV = "development" 
+  }
